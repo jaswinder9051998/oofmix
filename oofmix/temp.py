@@ -1,6 +1,7 @@
 
 from sklearn.model_selection import KFold
 import pandas as pd
+import numpy as np
 
 
 class SplitObject():
