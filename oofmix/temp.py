@@ -2,6 +2,7 @@
 from sklearn.model_selection import KFold
 import pandas as pd
 import numpy as np
+from oofmix.modelobject import SplitModelObjectHolder
 
 
 class SplitObject():
@@ -32,6 +33,8 @@ class SplitObject():
         skf = KFold(n_splits=self.n_splits, shuffle=True, random_state=self.random_state)
         features = X.colunms
         X['oof_predictions'] = 0
+        model_holder = SplitModelObjectHolder()
+
 
         for fold,(train_idx, valid_idx) in enumerate(skf.split(X, y)):
             valid_x = X.loc[valid_idx, features ]
@@ -40,12 +43,14 @@ class SplitObject():
             train_x = X.loc[train_idx, features ]
             train_y = y.loc[train_idx]
 
-            # need to have the individual models in each split saved
+            #2. need to have the individual models in each split saved
             model = 0 # need to figure out
 
             model.fit(train_x, train_y)
 
             oof_preds = model.predict(valid_x)
+
+            model_holder.add_model(model) # posttible solution to 2. ?
 
             X.loc[valid_idx, 'oof_predictions']  = model.predict(valid_x)
 
